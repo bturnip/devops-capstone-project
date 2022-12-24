@@ -129,28 +129,32 @@ class TestAccountService(TestCase):
         #--Make a self.client.post() call to accounts to create a new account 
         #  passing in some account data
         test_account01 = AccountFactory()
-    
+
         response = self.client.post(
             BASE_URL,
             json=test_account01.serialize(),
             content_type="application/json"
         )
-
+        
+        #--Get back the account id that was generated from the json
         test_data01 = response.get_json()
-        #--Get back the account id that was generated from the json.
         test01_id = test_data01["id"]
         self.assertIsNotNone(test01_id)
 
         #--Make a self.client.get() call to /accounts/{id} passing in
         #  that account id.  Assert return code was HTTP_200_OK
-        response2 = self.client.get(
-            BASE_URL
-            ,json=test01_id.serialize()
-            ,content_type="application/json"
-        )
+        get_acct_url = f"{BASE_URL}/{test01_id}"
+        response = self.client.get(get_acct_url)
+        self.assertEqual('HTTP_200_OK',response.status)
 
-        
-
+        #--Check the json that was returned and assert that it is equal 
+        #  to the data that you sent.
+        test_data02 = response.get_json()
+        compare_fields = ['name','email','address','phone_number','date_joined']
+        for this_field in compare_fields:
+            expected_result = getattr(test_account01, this_field)
+            test_result = test_data02[this_field]
+            self.assertEqual(expected_result, test_result)
 
 
 
