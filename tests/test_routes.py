@@ -124,3 +124,33 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     # ADD YOUR TEST CASES HERE ...
+    def test_read_an_account(self):
+        """NEW: Read an Account"""
+        #--Make a self.client.post() call to accounts to create a new account 
+        #  passing in some account data
+        test_account01 = AccountFactory()
+    
+        response = self.client.post(
+            BASE_URL,
+            json=test_account01.serialize(),
+            content_type="application/json"
+        )
+
+        test_data01 = response.get_json()
+        #--Get back the account id that was generated from the json.
+        test01_id = test_data01["id"]
+        self.assertIsNotNone(test01_id)
+
+        #--Make a self.client.get() call to /accounts/{id} passing in
+        #  that account id.  Assert return code was HTTP_200_OK
+        response2 = self.client.get(
+            BASE_URL
+            ,json=test01_id.serialize()
+            ,content_type="application/json"
+        )
+
+        
+
+
+
+
