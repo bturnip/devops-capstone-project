@@ -77,8 +77,15 @@ def read_account(acct_id):
     """
     app.logger.info(f"Account info request")
     account = Account.find(acct_id)
-    message = account.serialize()
-    return make_response(jsonify(message),status.HTTP_200_OK,{"Location":"/"})
+
+    if account is None:
+        message = f"No account found with id: [{acct_id}]"
+        request_status = status.HTTP_404_NOT_FOUND
+    else:
+        message = account.serialize()
+        request_status = status.HTTP_200_OK
+
+    return make_response(jsonify(message),request_status,{"Location":"/"})
     
 
 
