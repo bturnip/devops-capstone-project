@@ -142,17 +142,17 @@ class TestAccountService(TestCase):
         self.assertIsNotNone(test01_id)
 
         #--Make a self.client.get() call to /accounts/{id} passing in
-        #  that account id.  Assert return code was HTTP_200_OK
+        #  that account id.  Assert return code was "200 OK"
         get_acct_url = f"{BASE_URL}/{test01_id}"
         response = self.client.get(get_acct_url)
-        self.assertEqual('HTTP_200_OK',response.status)
+        self.assertEqual('200 OK',response.status)
 
         #--Check the json that was returned and assert that it is equal 
         #  to the data that you sent.
         test_data02 = response.get_json()
         compare_fields = ['name','email','address','phone_number','date_joined']
         for this_field in compare_fields:
-            expected_result = getattr(test_account01, this_field)
+            expected_result = str(getattr(test_account01, this_field))
             test_result = test_data02[this_field]
             self.assertEqual(expected_result, test_result)
 
