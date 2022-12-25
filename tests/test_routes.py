@@ -125,7 +125,7 @@ class TestAccountService(TestCase):
 
     # ADD YOUR TEST CASES HERE ...
     def test_read_an_account(self):
-        """NEW: Read an Account"""
+        """NEW: Read an Account, return account details"""
         #--Make a self.client.post() call to accounts to create a new account 
         #  passing in some account data
         test_account01 = AccountFactory()
@@ -156,5 +156,11 @@ class TestAccountService(TestCase):
             test_result = test_data02[this_field]
             self.assertEqual(expected_result, test_result)
 
+    def test_account_not_found(self):
+        """ Return a 404 NOT FOUND status when an account id is not found """
+        test_id = 0
+        expected_status = "404 NOT FOUND"
 
-
+        test_url = f"{BASE_URL}/{test_id}"
+        response = self.client.get(test_url)
+        self.assertEqual(expected_status,response.status)

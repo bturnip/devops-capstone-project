@@ -55,4 +55,16 @@ print(f"+++DEBUG: status: {response.status}")
 print(f"+++DEBUG: raw resp: {response}")
 print(f"+++DEBUG: resp json (test_data02) {test_data02}")
 
+test_id=0
+print(f"=Testing with id={test_id} ============================================")
+
+this_url = f"{BASE_URL}/{test_id}"
+response = client.get(this_url)
+test_data03 = response.get_json()
+
+print(f"+++DEBUG: status: {response.status}")
+
+print(f"+++DEBUG: raw resp: {response}")
+print(f"+++DEBUG: resp json (test_data03) {test_data03}")
+
 
