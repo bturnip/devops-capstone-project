@@ -140,9 +140,24 @@ def upate_account(acct_id):
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
+@app.route("/accounts/<acct_id>", methods=["DELETE"])
+def delete_account(acct_id):
+    """
+    Finds and deletes an account with given input id
+    Returns status HTTP-204 after deleting or if account not found
+    """
+    app.logger.info(f"Deleting Account request: acct_id:[{acct_id}]")
+    account = Account.find(acct_id)
 
-# ... place you code here to DELETE an account ...
-
+    if account is None:
+        message = f"Account id [{acct_id}] not found, nothing to do."
+        app.logger.info(message)
+    else:
+        message = f"Account id [{acct_id}] deleted"
+        account.delete()
+    
+    request_status = status.HTTP_204_NO_CONTENT
+    return make_response(jsonify(message),request_status,{"Location":"/"})
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S

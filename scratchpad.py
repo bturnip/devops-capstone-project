@@ -1,5 +1,6 @@
 import os
 import logging
+import random
 
 from unittest import TestCase 
 from tests.factories import AccountFactory
@@ -126,3 +127,14 @@ bad_acct_url = f"{BASE_URL}/0"
 response = client.put(bad_acct_url)
 print(f"+++DEBUG: status is: {response.status}")
 '''
+
+expected_record_count =  10
+_create_accounts(expected_record_count)
+random_id = random.randrange(0, expected_record_count)
+
+
+
+response = self.client.get(BASE_URL)
+test_data01 = response.get_json()
+
+print(f"+++DEBUG: random record is #{random_id}: \n{test_data01[random]}")
