@@ -7,6 +7,7 @@ Test cases can be run with the following:
 """
 import os
 import logging
+import random
 from unittest import TestCase
 from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
@@ -231,3 +232,39 @@ class TestAccountService(TestCase):
         response = self.client.put(bad_acct_url)
         expected_status = '404 NOT FOUND'
         self.assertEqual(expected_status,response.status)
+
+    def test_delete_account(self):
+        """ Test deleting accounts by id """
+        #--create some records, pick a random record to delete
+        expected_record_count =  10
+        random_record_num = random.randrange(0, expected_record_count)
+        
+        self._create_accounts(expected_record_count)
+        response = self.client.get(BASE_URL)
+        test_data = response.get_json()
+        target_id = test_data[random_record_num]["id"]
+
+        #--delete the record, check response status
+        delete_url = f"{BASE_URL}/{target_id}"
+        response = self.client.delete(delete_url)
+
+        expected_status = '204 NO CONTENT'
+        self.assertEqual(expected_status,response.status)
+
+        #--check that the id is no longer found
+        response = self.client.get(delete_url)
+        expected_status = "404 NOT FOUND"
+        self.assertEqual(expected_status,response.status)
+
+    def test_delete_non_existant_account(self):
+        """ Test deleting non-existant id """
+        #--attempt to delete a known non-existant record
+        delete_url = f"{BASE_URL}/0"
+        response = self.client.delete(delete_url)
+
+        expected_status = '204 NO CONTENT'
+        self.assertEqual(expected_status,response.status)
+        
+
+
+
