@@ -193,3 +193,41 @@ class TestAccountService(TestCase):
         
         self.assertEqual(expected_status,response.status)
         self.assertEqual(expected_record_count,len(test_data02))
+
+    def test_update_account(self):
+        """It should Update an existing Account"""
+        # create an Account to update
+
+        test_account01 = AccountFactory()
+        # send a self.client.post() request to the BASE_URL with a json payload of test_account.serialize()
+        response = self.client.post(
+            BASE_URL,
+            json=test_account01.serialize(),
+            content_type="application/json")
+    
+        # assert that the resp.status_code is status.HTTP_201_CREATED
+        expected_status = '201 CREATED'
+        self.assertEqual(expected_status,response.status)
+
+        # update the account
+        new_account = response.get_json()
+        update_name = 'Foo X. Bar'
+
+        new_account["name"] = update_name
+        target_id = new_account["id"]
+        acct_id_url = f"{BASE_URL}/{target_id}"
+
+        response = self.client.put(acct_id_url,json=new_account)
+
+        expected_status = '200 OK'
+        self.assertEqual(expected_status,response.status)
+        
+        updated_acct = response.get_json()
+        self.assertEqual(update_name, updated_acct["name"])
+
+    def test_update_with_bad_date(self):
+        """ Non-existant account returns 404 on update request """
+        bad_acct_url = f"{BASE_URL}/0"
+        response = self.client.put(bad_acct_url)
+        expected_status = '404 NOT FOUND'
+        self.assertEqual(expected_status,response.status)

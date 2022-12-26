@@ -109,8 +109,32 @@ def read_account(acct_id):
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
+@app.route("/accounts/<acct_id>", methods=["PUT"])
+def upate_account(acct_id):
+    """
+    Updates an account with given input id
+    Returns status HTTP-404 if account not found, HTTP-200 otherwise
+    PUT Method implies full record must be included in request
+    """
+    app.logger.info(f"Updating Account request: acct_id:[{acct_id}]")
+    account = Account.find(acct_id)
 
-# ... place you code here to UPDATE an account ...
+    if account is None:
+        message = f"No account found with id: [{acct_id}]"
+        request_status = status.HTTP_404_NOT_FOUND
+        abort(request_status,message)
+    else:
+        # call the deserialize() method on the account passing in request.get_json()
+        # call account.update() to update the account with the new data
+        account.deserialize(request.get_json())
+        account.update()
+
+        # refetch new account details and return
+        message = account.serialize()
+        request_status = status.HTTP_200_OK
+
+    return make_response(jsonify(message),request_status,{"Location":"/"})
+
 
 
 ######################################################################
