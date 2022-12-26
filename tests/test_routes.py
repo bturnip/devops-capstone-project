@@ -164,3 +164,32 @@ class TestAccountService(TestCase):
         test_url = f"{BASE_URL}/{test_id}"
         response = self.client.get(test_url)
         self.assertEqual(expected_status,response.status)
+
+    def test_get_account_list(self):
+        """It should Get a list of Accounts"""
+        expected_status = "200 OK"
+        expected_record_count =  5
+        self._create_accounts(expected_record_count)
+        # send a self.client.get() request to the BASE_URL
+        # query_string=""
+        response = self.client.get(BASE_URL)
+
+        # assert that the resp.status_code is status.HTTP_200_OK
+        self.assertEqual("200 OK", response.status)
+        # get the data from resp.get_json()
+        test_data01 = response.get_json()
+        # assert that the len() of the data is 5 (the number of accounts you created)
+        self.assertIsInstance(test_data01,list)
+        self.assertEqual(expected_record_count,len(test_data01))
+
+    def test_empty_account_database(self):
+        """Any empty list of Accounts should be [] and '200 OK' """
+        
+        expected_record_count = 0
+        expected_status = "200 OK"
+        
+        response = self.client.get(BASE_URL)
+        test_data02 = response.get_json()
+        
+        self.assertEqual(expected_status,response.status)
+        self.assertEqual(expected_record_count,len(test_data02))
