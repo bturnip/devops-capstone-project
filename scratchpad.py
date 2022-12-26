@@ -20,7 +20,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
 app.logger.setLevel(logging.CRITICAL)
 init_db(app)
 
-print("=================================================================")
 
 client = app.test_client()
 '''
@@ -65,7 +64,7 @@ print(f"+++DEBUG: status: {response.status}")
 
 print(f"+++DEBUG: raw resp: {response}")
 print(f"+++DEBUG: resp json (test_data03) {test_data03}")
-'''
+
 
 print("=Testing getting all accounts========================================")
 print("+++DEBUG: creating accounts...")
@@ -85,4 +84,45 @@ print(f"+++DEBUG: status: {response.status}")
 print(f"+++DEBUG: raw resp: {response}")
 #print(f"+++DEBUG: resp json (test_data04) {test_data04}")
 print(f"+++DEBUG: number of records: {len(test_data04)}")
+'''
 
+test_account01 = AccountFactory()
+#compare_fields = ['name','email','address','phone_number','date_joined']
+#for this_field in compare_fields:
+#    print(getattr(test_account01, this_field))
+
+print("+++DEBUG: creating account ++++++++++++++++++++++++++++++++++++++++")
+resp = client.post(BASE_URL
+                   ,json=test_account01.serialize()
+                   ,content_type="application/json")
+
+created_acct = resp.get_json()
+target_id = created_acct["id"]
+
+print(f"+++DEBUG: account creation status:{resp.status}")
+print(f"+++DEBUG: target_id:{target_id}")
+
+
+print("+++DEBUG: starting update process +++++++++++++++++++++++++++++++++")
+
+created_acct["name"] = 'Foo X. Bar'
+acct_id_url = f"{BASE_URL}/{target_id}"
+
+
+response = client.put(acct_id_url,json=created_acct)
+
+updated_record = response.get_json()
+
+print(f"+++DEBUG: status: {response.status}")
+
+print(f"+++DEBUG: raw resp: {response}")
+print(f"+++DEBUG: resp json (updated_record) {updated_record}")
+
+response = client.put(acct_id_url)
+print(f"+++DEBUG: status is: {response.status}")
+
+'''
+bad_acct_url = f"{BASE_URL}/0"
+response = client.put(bad_acct_url)
+print(f"+++DEBUG: status is: {response.status}")
+'''
