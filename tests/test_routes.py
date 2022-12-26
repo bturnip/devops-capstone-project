@@ -13,12 +13,15 @@ from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
 from service.routes import app
+from service import talisman
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
 BASE_URL = "/accounts"
+
+HTTPS_ENVIRON = {'wsgi.url_scheme': 'https'}
 
 
 ######################################################################
@@ -30,6 +33,7 @@ class TestAccountService(TestCase):
     @classmethod
     def setUpClass(cls):
         """Run once before all tests"""
+        talisman.force_https = False
         app.config["TESTING"] = True
         app.config["DEBUG"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
@@ -271,6 +275,33 @@ class TestAccountService(TestCase):
         bad_request_response = self.client.patch(test_url)
         expected_status = '405 METHOD NOT ALLOWED'
         self.assertEqual(expected_status,bad_request_response.status)
+    
+    def test_http_environ(self):
+        """ HTTPS_ENVIRON should return the XSS/Security Headers """
+        expected_results = {'X-Frame-Options': 'SAMEORIGIN'
+                            ,'X-XSS-Protection': '1; mode=block'
+                            ,'X-Content-Type-Options': 'nosniff'
+                            ,'Content-Security-Policy': 'default-src \'self\'; object-src \'none\''
+                            ,'Referrer-Policy': 'strict-origin-when-cross-origin'}
+        
+        response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
+        
+        for this_header,expected_val in expected_results.items():
+            self.assertEqual(expected_val
+                             ,response.headers.get(this_header))
+    
+    def test_CORS_policies(self):
+        """ Test that CORS policies are in effect """
+        response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
+        
+        expected_response ={'Access-Control-Allow-Origin': '*'}
+        self.assertEqual(expected_response['Access-Control-Allow-Origin']
+                         ,response.headers.get('Access-Control-Allow-Origin'))
+
+
+
+
+
         
 
 
