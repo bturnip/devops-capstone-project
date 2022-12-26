@@ -264,6 +264,13 @@ class TestAccountService(TestCase):
 
         expected_status = '204 NO CONTENT'
         self.assertEqual(expected_status,response.status)
+    
+    def test_method_not_supported(self):
+        """ Test error handler for HTTP-405 """
+        test_url = f"{BASE_URL}/0"
+        bad_request_response = self.client.patch(test_url)
+        expected_status = '405 METHOD NOT ALLOWED'
+        self.assertEqual(expected_status,bad_request_response.status)
         
 
 
