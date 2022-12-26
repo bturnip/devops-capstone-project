@@ -5,7 +5,6 @@ This microservice handles the lifecycle of Accounts
 """
 # pylint: disable=unused-import
 from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
-#from flask.json import dumps
 from service.models import Account
 from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
@@ -58,6 +57,7 @@ def create_accounts():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
@@ -72,18 +72,15 @@ def list_accounts():
     records_returned = len(acct_list)
     app.logger.info(f"Total number of records returned: [{records_returned}]")
     message = acct_list
-    
+
     request_status = status.HTTP_200_OK
 
-    return make_response(jsonify(message), request_status, {"Location":"/"})
-
+    return make_response(jsonify(message), request_status, {"Location": "/"})
 
 
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
-
-# ... place you code here to READ an account ...
 @app.route("/accounts/<acct_id>", methods=["GET"])
 def read_account(acct_id):
     """
@@ -100,10 +97,7 @@ def read_account(acct_id):
         message = account.serialize()
         request_status = status.HTTP_200_OK
 
-    return make_response(jsonify(message),request_status,{"Location":"/"})
-    
-
-
+    return make_response(jsonify(message), request_status, {"Location": "/"})
 
 
 ######################################################################
@@ -122,7 +116,7 @@ def upate_account(acct_id):
     if account is None:
         message = f"No account found with id: [{acct_id}]"
         request_status = status.HTTP_404_NOT_FOUND
-        abort(request_status,message)
+        abort(request_status, message)
     else:
         # call the deserialize() method on the account passing in request.get_json()
         # call account.update() to update the account with the new data
@@ -133,8 +127,7 @@ def upate_account(acct_id):
         message = account.serialize()
         request_status = status.HTTP_200_OK
 
-    return make_response(jsonify(message),request_status,{"Location":"/"})
-
+    return make_response(jsonify(message), request_status, {"Location": "/"})
 
 
 ######################################################################
@@ -155,15 +148,14 @@ def delete_account(acct_id):
     else:
         message = f"Account id [{acct_id}] deleted"
         account.delete()
-    
+
     request_status = status.HTTP_204_NO_CONTENT
-    return make_response(jsonify(message),request_status,{"Location":"/"})
+    return make_response(jsonify(message), request_status, {"Location": "/"})
+
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
-
-
 def check_content_type(media_type):
     """Checks that the media type is correct"""
     content_type = request.headers.get("Content-Type")
