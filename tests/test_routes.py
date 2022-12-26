@@ -20,6 +20,8 @@ DATABASE_URI = os.getenv(
 
 BASE_URL = "/accounts"
 
+HTTPS_ENVIRON = {'wsgi.url_scheme': 'https'}
+
 
 ######################################################################
 #  T E S T   C A S E S
@@ -271,6 +273,24 @@ class TestAccountService(TestCase):
         bad_request_response = self.client.patch(test_url)
         expected_status = '405 METHOD NOT ALLOWED'
         self.assertEqual(expected_status,bad_request_response.status)
+    
+    def test_http_environ(self):
+        """ HTTPS_ENVIRON should return the XSS/Security Headers """
+        expected_results = {'X-Frame-Options': 'SAMEORIGIN'
+                            ,'X-XSS-Protection': '1; mode=block'
+                            ,'X-Content-Type-Options': 'nosniff'
+                            ,'Content-Security-Policy': 'default-src \'self\'; object-src \'none\''
+                            ,'Referrer-Policy': 'strict-origin-when-cross-origin'}
+        
+        response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
+        
+        for this_header,expected_val in expected_results.items():
+            self.assertEqual(expected_val
+                             ,response.headers.get(this_header))
+
+
+
+
         
 
 
