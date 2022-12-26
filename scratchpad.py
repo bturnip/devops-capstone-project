@@ -21,10 +21,10 @@ app.logger.setLevel(logging.CRITICAL)
 init_db(app)
 
 print("=================================================================")
+
 client = app.test_client()
-
+'''
 test_account01 = AccountFactory()
-
 compare_fields = ['name','email','address','phone_number','date_joined']
 
 for this_field in compare_fields:
@@ -34,7 +34,6 @@ for this_field in compare_fields:
 resp = client.post(BASE_URL
                    ,json=test_account01.serialize()
                    ,content_type="application/json")
-
 
 test_data01 = resp.get_json()
 print(f"+++DEBUG resp json (test_data01):\n {test_data01}\n")
@@ -56,7 +55,7 @@ print(f"+++DEBUG: raw resp: {response}")
 print(f"+++DEBUG: resp json (test_data02) {test_data02}")
 
 test_id=0
-print(f"=Testing with id={test_id} ============================================")
+print(f"=Testing with id={test_id} =========================================")
 
 this_url = f"{BASE_URL}/{test_id}"
 response = client.get(this_url)
@@ -66,5 +65,24 @@ print(f"+++DEBUG: status: {response.status}")
 
 print(f"+++DEBUG: raw resp: {response}")
 print(f"+++DEBUG: resp json (test_data03) {test_data03}")
+'''
 
+print("=Testing getting all accounts========================================")
+print("+++DEBUG: creating accounts...")
+for i in range(0,3):
+    x = AccountFactory()
+    client.post(BASE_URL, json=x.serialize(), content_type="application/json")
+
+
+print(f"+++DEBUG: calling client.get(BASE_URL), BASE_URL: {BASE_URL}")
+response = client.get(BASE_URL)
+
+print("+++DEBUG: getting json from response...")
+test_data04 = response.get_json()
+
+print(f"+++DEBUG: status: {response.status}")
+
+print(f"+++DEBUG: raw resp: {response}")
+#print(f"+++DEBUG: resp json (test_data04) {test_data04}")
+print(f"+++DEBUG: number of records: {len(test_data04)}")
 

@@ -5,6 +5,7 @@ This microservice handles the lifecycle of Accounts
 """
 # pylint: disable=unused-import
 from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
+#from flask.json import dumps
 from service.models import Account
 from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
@@ -60,8 +61,22 @@ def create_accounts():
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
+@app.route("/accounts", methods=["GET"])
+def list_accounts():
+    """ Return a list of all accounts """
+    app.logger.info("Returning all records")
+    acct_list = []
+    for x in Account.all():
+        acct_list.append(x.serialize())
 
-# ... place you code here to LIST accounts ...
+    records_returned = len(acct_list)
+    app.logger.info(f"Total number of records returned: [{records_returned}]")
+    message = acct_list
+    
+    request_status = status.HTTP_200_OK
+
+    return make_response(jsonify(message), request_status, {"Location":"/"})
+
 
 
 ######################################################################
@@ -75,7 +90,7 @@ def read_account(acct_id):
     Finds and returns an account by input id
     Returns status HTTP-404 if account not found, HTTP-200 otherwise
     """
-    app.logger.info(f"Account info request")
+    app.logger.info(f"Account info request: acct_id:[{acct_id}]")
     account = Account.find(acct_id)
 
     if account is None:
