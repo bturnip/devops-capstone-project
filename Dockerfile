@@ -8,7 +8,7 @@ RUN pip install -r requirements.txt --no-cache-dir
 COPY service/ ./service/
 
 #--create theia user and give ownership of app folder
-RUN useradd --uid 1000
+RUN useradd --uid 1000 theia
 RUN chown -R theia /app
 USER theia
 
