@@ -180,7 +180,7 @@ class TestAccountService(TestCase):
         response = self.client.get(BASE_URL)
 
         # assert that the resp.status_code is status.HTTP_200_OK
-        self.assertEqual("200 OK", response.status)
+        self.assertEqual(expected_status, response.status)
         # get the data from resp.get_json()
         test_data01 = response.get_json()
         # assert that the len() of the data is 5 (the number of accounts you created)
@@ -240,7 +240,7 @@ class TestAccountService(TestCase):
     def test_delete_account(self):
         """ Test deleting accounts by id """
         #--create some records, pick a random record to delete
-        expected_record_count =  10
+        expected_record_count = 10
         random_record_num = random.randrange(0, expected_record_count)
 
         self._create_accounts(expected_record_count)
@@ -294,6 +294,6 @@ class TestAccountService(TestCase):
         """ Test that CORS policies are in effect """
         response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
 
-        expected_response ={'Access-Control-Allow-Origin': '*'}
+        expected_response = {'Access-Control-Allow-Origin': '*'}
         self.assertEqual(expected_response['Access-Control-Allow-Origin']
                          ,response.headers.get('Access-Control-Allow-Origin'))
