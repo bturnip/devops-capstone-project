@@ -131,7 +131,7 @@ class TestAccountService(TestCase):
     # ADD YOUR TEST CASES HERE ...
     def test_read_an_account(self):
         """NEW: Read an Account, return account details"""
-        #--Make a self.client.post() call to accounts to create a new account 
+        #--Make a self.client.post() call to accounts to create a new account
         #  passing in some account data
         test_account01 = AccountFactory()
 
@@ -140,7 +140,7 @@ class TestAccountService(TestCase):
             json=test_account01.serialize(),
             content_type="application/json"
         )
-        
+
         #--Get back the account id that was generated from the json
         test_data01 = response.get_json()
         test01_id = test_data01["id"]
@@ -152,7 +152,7 @@ class TestAccountService(TestCase):
         response = self.client.get(get_acct_url)
         self.assertEqual('200 OK',response.status)
 
-        #--Check the json that was returned and assert that it is equal 
+        #--Check the json that was returned and assert that it is equal
         #  to the data that you sent.
         test_data02 = response.get_json()
         compare_fields = ['name','email','address','phone_number','date_joined']
@@ -173,14 +173,14 @@ class TestAccountService(TestCase):
     def test_get_account_list(self):
         """It should Get a list of Accounts"""
         expected_status = "200 OK"
-        expected_record_count =  5
+        expected_record_count = 5
         self._create_accounts(expected_record_count)
         # send a self.client.get() request to the BASE_URL
         # query_string=""
         response = self.client.get(BASE_URL)
 
         # assert that the resp.status_code is status.HTTP_200_OK
-        self.assertEqual("200 OK", response.status)
+        self.assertEqual(expected_status, response.status)
         # get the data from resp.get_json()
         test_data01 = response.get_json()
         # assert that the len() of the data is 5 (the number of accounts you created)
@@ -189,13 +189,13 @@ class TestAccountService(TestCase):
 
     def test_empty_account_database(self):
         """Any empty list of Accounts should be [] and '200 OK' """
-        
+
         expected_record_count = 0
         expected_status = "200 OK"
-        
+
         response = self.client.get(BASE_URL)
         test_data02 = response.get_json()
-        
+
         self.assertEqual(expected_status,response.status)
         self.assertEqual(expected_record_count,len(test_data02))
 
@@ -209,7 +209,7 @@ class TestAccountService(TestCase):
             BASE_URL,
             json=test_account01.serialize(),
             content_type="application/json")
-    
+
         # assert that the resp.status_code is status.HTTP_201_CREATED
         expected_status = '201 CREATED'
         self.assertEqual(expected_status,response.status)
@@ -226,7 +226,7 @@ class TestAccountService(TestCase):
 
         expected_status = '200 OK'
         self.assertEqual(expected_status,response.status)
-        
+
         updated_acct = response.get_json()
         self.assertEqual(update_name, updated_acct["name"])
 
@@ -240,9 +240,9 @@ class TestAccountService(TestCase):
     def test_delete_account(self):
         """ Test deleting accounts by id """
         #--create some records, pick a random record to delete
-        expected_record_count =  10
+        expected_record_count = 10
         random_record_num = random.randrange(0, expected_record_count)
-        
+
         self._create_accounts(expected_record_count)
         response = self.client.get(BASE_URL)
         test_data = response.get_json()
@@ -268,14 +268,14 @@ class TestAccountService(TestCase):
 
         expected_status = '204 NO CONTENT'
         self.assertEqual(expected_status,response.status)
-    
+
     def test_method_not_supported(self):
         """ Test error handler for HTTP-405 """
         test_url = f"{BASE_URL}/0"
         bad_request_response = self.client.patch(test_url)
         expected_status = '405 METHOD NOT ALLOWED'
         self.assertEqual(expected_status,bad_request_response.status)
-    
+
     def test_http_environ(self):
         """ HTTPS_ENVIRON should return the XSS/Security Headers """
         expected_results = {'X-Frame-Options': 'SAMEORIGIN'
@@ -283,26 +283,17 @@ class TestAccountService(TestCase):
                             ,'X-Content-Type-Options': 'nosniff'
                             ,'Content-Security-Policy': 'default-src \'self\'; object-src \'none\''
                             ,'Referrer-Policy': 'strict-origin-when-cross-origin'}
-        
+
         response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
-        
+
         for this_header,expected_val in expected_results.items():
             self.assertEqual(expected_val
                              ,response.headers.get(this_header))
-    
+
     def test_CORS_policies(self):
         """ Test that CORS policies are in effect """
         response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
-        
-        expected_response ={'Access-Control-Allow-Origin': '*'}
+
+        expected_response = {'Access-Control-Allow-Origin': '*'}
         self.assertEqual(expected_response['Access-Control-Allow-Origin']
                          ,response.headers.get('Access-Control-Allow-Origin'))
-
-
-
-
-
-        
-
-
-
