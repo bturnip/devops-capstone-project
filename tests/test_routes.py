@@ -173,7 +173,7 @@ class TestAccountService(TestCase):
     def test_get_account_list(self):
         """It should Get a list of Accounts"""
         expected_status = "200 OK"
-        expected_record_count =  5
+        expected_record_count = 5
         self._create_accounts(expected_record_count)
         # send a self.client.get() request to the BASE_URL
         # query_string=""
